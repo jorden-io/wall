@@ -2,6 +2,8 @@ import express from "express";
 const app = express();
 import pg from "pg";
 import cors from "cors";
+import fs from "fs";
+import https from "https";
 
 //DB CONNECTION
 const pool = new pg.Client({
@@ -12,7 +14,7 @@ const pool = new pg.Client({
   database: "postgres",
   ssl: true,
 });
-await pool.connect();
+pool.connect();
 app.use(cors());
 app.use(express.json());
 
@@ -27,12 +29,17 @@ app.listen(8000, () => console.log("api running on 8000"));
 app.get("/", async (req, res) => {
   try {
     const data = await pool.query("SELECT * FROM messages");
-    res.json(data.rows[0]);
+    res.json(data.rows);
     console.log(res.json(data.rows));
   } catch {}
 });
-app.get("/", async (req, res) => {
+
+app.post("/message", async (req, res) => {
   try {
-    res.json("hi");
+    const {data} = req.body;
+    const message = await pool.query("INSERT INTO messages (data) VALUES ($1) ", [data]);
+    res.json(message.rows);
+    console.log(res.json(message.rows));
   } catch {}
 });
+
