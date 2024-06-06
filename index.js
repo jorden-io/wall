@@ -10,7 +10,7 @@ const pool = new pg.Client({
   host: "pgdb.ch608saq4znm.us-east-2.rds.amazonaws.com",
   port: 5431,
   database: "postgres",
-  //ssl: true,
+  ssl: true,
 });
 await pool.connect();
 app.use(cors());
